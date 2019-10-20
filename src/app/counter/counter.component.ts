@@ -6,7 +6,12 @@ import './Counter'
   templateUrl: './counter.component.html'
 })
 export class CounterComponent implements OnInit {
-  count = Math.random()
+  count = 0
   constructor() {}
+  onChange = (newCount: number) => {
+    console.log(newCount)
+    this.count = newCount
+  }
+
   ngOnInit() {}
 }

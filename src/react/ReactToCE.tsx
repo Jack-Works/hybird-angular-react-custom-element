@@ -7,20 +7,32 @@ interface CustomElementOptions {
 }
 export type ReactComponent<T> = React.ComponentType<T> & CustomElementOptions
 
+// TODO: use private fields.
+const props = Symbol('Props')
+const host = Symbol('Host')
 export function ReactToCustomElement<T>(ReactComponent: React.ComponentType<T> & CustomElementOptions) {
   if (ReactComponent.displayName === undefined || ReactComponent.displayName.indexOf('-') === -1)
     throw new TypeError('The "displayName" property must have a "-" in the middle.')
   class CustomElement extends HTMLElement {
-    private props: any = {}
-    private host = document.createElement('host')
+    private [props]: any = new Proxy(
+      {},
+      {
+        set: (target, key, value, receiver) => {
+          Reflect.set(target, key, value, receiver)
+          render(ReactComponent, this[props], this[host])
+          return true
+        }
+        // TODO: implement deleteProperty
+      }
+    )
+    private [host] = document.createElement('host')
     constructor() {
       super()
       Object.setPrototypeOf(
         this,
         new Proxy(HTMLElement.prototype, {
           set: (target, key, value, receiver) => {
-            this.props[key] = value
-            ReactDOM.render(<ReactComponent {...this.props} />, this.host)
+            this[props][key] = value
             return Reflect.set(target, key, value, receiver)
           }
           // TODO: implements defineProperty
@@ -29,10 +41,14 @@ export function ReactToCustomElement<T>(ReactComponent: React.ComponentType<T> &
       )
     }
     connectedCallback() {
-      this.appendChild(this.host)
-      ReactDOM.render(<ReactComponent {...this.props} />, this.host)
+      this.appendChild(this[host])
+      render(ReactComponent, this[props], this[host])
     }
   }
   customElements.define(ReactComponent.displayName, CustomElement, ReactComponent.customElementOptions)
   return CustomElement
+}
+
+function render(component: React.ComponentType<any>, props: any, host: Element) {
+  ReactDOM.render(React.createElement(component, props), host)
 }
