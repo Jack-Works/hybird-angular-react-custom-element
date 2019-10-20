@@ -6,7 +6,7 @@ import './Counter'
   templateUrl: './counter.component.html'
 })
 export class CounterComponent implements OnInit {
+  count = Math.random()
   constructor() {}
-
   ngOnInit() {}
 }
