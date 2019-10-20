@@ -2,12 +2,12 @@
   "name": "hybird-playground",
   "version": "0.0.0",
   "scripts": {
-    "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
-    "test": "ng test",
-    "lint": "ng lint",
-    "e2e": "ng e2e"
+    "ng": "npx @angular/cli",
+    "start": "npx @angular/cli serve",
+    "build": "npx @angular/cli build",
+    "test": "npx @angular/cli test",
+    "lint": "npx @angular/cli lint",
+    "e2e": "npx @angular/cli e2e"
   },
   "private": true,
   "dependencies": {
@@ -19,6 +19,10 @@
     "@angular/platform-browser": "~8.2.11",
     "@angular/platform-browser-dynamic": "~8.2.11",
     "@angular/router": "~8.2.11",
+    "@types/react": "^16.9.9",
+    "@types/react-dom": "^16.9.2",
+    "react": "^16.10.2",
+    "react-dom": "^16.10.2",
     "rxjs": "~6.4.0",
     "tslib": "^1.10.0",
     "zone.js": "~0.9.1"
