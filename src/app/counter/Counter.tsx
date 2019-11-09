@@ -1,5 +1,4 @@
 import * as React from 'react'
-import { ReactToCustomElement } from 'src/react/ReactToCE'
 
 export let Counter: React.ComponentType<{
   count: number
@@ -15,4 +14,3 @@ export let Counter: React.ComponentType<{
   )
 }
 Counter.displayName = 'app-counter-ui'
-ReactToCustomElement(Counter)

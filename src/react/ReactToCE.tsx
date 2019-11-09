@@ -76,7 +76,7 @@ export function ReactToCustomElement<T>(ReactComponent: React.ComponentType<T> &
 }
 
 export function GenerateAngularTemplate<T>(
-  ReactComponent: React.ComponentType<T>,
+  ReactComponent: ReactComponent<T>,
   ngClass: { new (...args: any[]): ReactComponentProps<typeof ReactComponent> }
 ) {
   let template = `<` + ReactComponent.displayName
@@ -100,8 +100,15 @@ export function GenerateAngularTemplate<T>(
   }
 
   template += '></' + ReactComponent.displayName + '>'
-  console.log(template)
   return template
+}
+
+export function useReact<T>(
+  ReactComponent: ReactComponent<T>,
+  ngClass: { new (...args: any[]): ReactComponentProps<typeof ReactComponent> }
+) {
+  if (!customElements.get(ReactComponent.displayName)) ReactToCustomElement(ReactComponent)
+  return GenerateAngularTemplate(ReactComponent, ngClass)
 }
 
 function render(component: React.ComponentType<any>, props: any, host: Element) {
