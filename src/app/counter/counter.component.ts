@@ -8,8 +8,8 @@ import { useReact } from 'src/react/ReactToCE'
 })
 export class CounterComponent implements OnInit, ReactComponentProps<typeof Counter> {
   count = 0
-  onChange($event: EventsOfComponent<typeof Counter>['onChange']) {
-    this.count = $event.detail
+  onChange(...[newCount]: EventsOfComponent<typeof Counter>['onChange']) {
+    this.count = newCount
   }
 
   ngOnInit() {}

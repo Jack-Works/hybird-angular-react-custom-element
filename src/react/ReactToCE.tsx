@@ -85,7 +85,7 @@ export function GenerateAngularTemplate<T>(
     if (i === 'constructor') continue
     if (i.startsWith('ng')) continue
     if (typeof desc[i].value === 'function') {
-      template += ` (${i})="${i}($event)" `
+      template += ` (${i})="${i}($event.detail)" `
     } else {
       template += ` [${i}]="${i}" `
     }
