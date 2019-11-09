@@ -55,16 +55,16 @@ export function ReactToCustomElement<T>(ReactComponent: React.ComponentType<T> &
       this.appendChild(this[host])
       render(ReactComponent, this[props], this[host])
     }
-    addEventListener(event: string, handler, options) {
+    addEventListener(event: string, handler: (...args: any) => void, options: any) {
       // TODO: Support removeEventListener
       // TODO: Support multiple listener for one event
       // TODO: Support options
-      this[props][event] = (...args) => {
+      this[props][event] = (...args: any[]) => {
         handler(
           new Proxy(new CustomEvent(event, { detail: args.length > 1 ? args : args[0] }), {
             get: (target, key, receiver) => {
               if (key === 'target') return this
-              return target[key]
+              return (target as any)[key]
             }
           })
         )
