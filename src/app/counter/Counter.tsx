@@ -6,7 +6,6 @@ export let Counter: React.ComponentType<{
   onChange(next: number): void
 }> = props => {
   const { count, onChange } = props
-  console.log(props)
   return (
     <>
       <button onClick={() => onChange(count - 1)}>-1</button>

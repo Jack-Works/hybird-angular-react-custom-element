@@ -33,7 +33,17 @@ export function ReactToCustomElement<T>(ReactComponent: React.ComponentType<T> &
         new Proxy(HTMLElement.prototype, {
           set: (target, key, value, receiver) => {
             this[props][key] = value
-            return Reflect.set(target, key, value, receiver)
+            Object.defineProperty(target, key, {
+              configurable: true,
+              enumerable: true,
+              get: () => Reflect.get(this[props], key),
+              set: v => {
+                this[props][key] = value
+                return true
+              }
+            })
+            return true
+            // return Reflect.set(target, key, value, receiver)
           }
           // TODO: implements defineProperty
           // TODO: implements deleteProperty
@@ -43,6 +53,21 @@ export function ReactToCustomElement<T>(ReactComponent: React.ComponentType<T> &
     connectedCallback() {
       this.appendChild(this[host])
       render(ReactComponent, this[props], this[host])
+    }
+    addEventListener(event: string, handler, options) {
+      // TODO: Support removeEventListener
+      // TODO: Support multiple listener for one event
+      // TODO: Support options
+      this[props][event] = (...args) => {
+        handler(
+          new Proxy(new CustomEvent(event, { detail: args.length > 1 ? args : args[0] }), {
+            get: (target, key, receiver) => {
+              if (key === 'target') return this
+              return target[key]
+            }
+          })
+        )
+      }
     }
   }
   customElements.define(ReactComponent.displayName, CustomElement, ReactComponent.customElementOptions)

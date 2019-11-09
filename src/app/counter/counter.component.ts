@@ -7,10 +7,8 @@ import './Counter'
 })
 export class CounterComponent implements OnInit {
   count = 0
-  constructor() {}
-  onChange = (newCount: number) => {
-    console.log(newCount)
-    this.count = newCount
+  onChange(newCount: CustomEvent<number>) {
+    this.count = newCount.detail
   }
 
   ngOnInit() {}
