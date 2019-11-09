@@ -1,13 +1,30 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>HybirdPlayground</title>
-  <base href="/">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
-</head>
-<body>
-  <app-root></app-root>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <title>HybirdPlayground</title>
+    <base href="/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <script>
+      EventTarget.prototype.addEventListener = new Proxy(EventTarget.prototype.addEventListener, {
+        apply(target, thisArg, args) {
+          const tagName = thisArg?.tagName
+          if (typeof tagName === 'string') {
+            if (tagName.match('-')) {
+              const constructor = customElements.get(tagName.toLowerCase())
+              const addEventListener = constructor?.prototype?.addEventListener
+              if (addEventListener) {
+                return Reflect.apply(addEventListener, thisArg, args)
+              }
+            }
+          }
+          return Reflect.apply(target, thisArg, args)
+        }
+      })
+    </script>
+  </head>
+  <body>
+    <app-root></app-root>
+  </body>
 </html>
