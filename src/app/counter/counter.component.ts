@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core'
 import { Counter } from './Counter'
+import { GenerateAngularTemplate } from 'src/react/ReactToCE'
 
 @Component({
   selector: 'app-counter',
-  templateUrl: './counter.component.html'
+  template: GenerateAngularTemplate(Counter, CounterComponent)
 })
 export class CounterComponent implements OnInit, ReactComponentProps<typeof Counter> {
   count = 0

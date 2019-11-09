@@ -1,3 +1,4 @@
+/// <reference path="./ReactHelper.d.ts" />
 import * as ReactDOM from 'react-dom'
 import * as React from 'react'
 
@@ -72,6 +73,35 @@ export function ReactToCustomElement<T>(ReactComponent: React.ComponentType<T> &
   }
   customElements.define(ReactComponent.displayName, CustomElement, ReactComponent.customElementOptions)
   return CustomElement
+}
+
+export function GenerateAngularTemplate<T>(
+  ReactComponent: React.ComponentType<T>,
+  ngClass: { new (...args: any[]): ReactComponentProps<typeof ReactComponent> }
+) {
+  let template = `<` + ReactComponent.displayName
+  const desc = Object.getOwnPropertyDescriptors(ngClass.prototype)
+  for (const i in desc) {
+    if (i === 'constructor') continue
+    if (i.startsWith('ng')) continue
+    if (typeof desc[i].value === 'function') {
+      template += ` (${i})="${i}($event)" `
+    } else {
+      template += ` [${i}]="${i}" `
+    }
+  }
+
+  // TODO: Support class fields
+  // @ts-ignore method matchAll is not typed yet.
+  const properties = new Set([...ngClass.toString().matchAll(/this\s?\.\s?(.+?)\s?=/g)].map(x => x[1]))
+  for (const property of properties) {
+    if (property in desc) continue
+    template += ` [${property}]="${property}" `
+  }
+
+  template += '></' + ReactComponent.displayName + '>'
+  console.log(template)
+  return template
 }
 
 function render(component: React.ComponentType<any>, props: any, host: Element) {
