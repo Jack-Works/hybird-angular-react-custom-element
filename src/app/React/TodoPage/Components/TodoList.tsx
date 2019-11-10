@@ -15,7 +15,19 @@ const useStyles = makeStyles((theme: Theme) => ({
         display: 'flex',
         flexDirection: 'column-reverse'
     } as const,
-    subheader: (props: { count: number }) => ({ order: props.count + 1 } as const)
+    subheader: (props: { count: number }) => ({ order: props.count + 1 } as const),
+    item: {
+        textDecorationLine: 'line-through',
+        transition: '0.4s'
+    },
+    completed: {
+        opacity: 0.5,
+        textDecorationColor: 'unset'
+    },
+    notCompleted: {
+        opacity: 1,
+        textDecorationColor: 'transparent'
+    }
 }))
 export interface TodoListProps {
     todoList: readonly TodoItem[]
@@ -30,10 +42,16 @@ export function TodoList(props: TodoListProps) {
             classes={{ root: classes.root }}
         >
             {props.todoList.map((value, index) => {
-                const labelId = `todo-list-secondary-label-${value}`
+                const labelId = `todo-list-secondary-label-${index}`
                 return (
                     <ListItem key={index} button onClick={() => props.onToggle(index)}>
-                        <ListItemText id={labelId} primary={value.title} />
+                        <ListItemText
+                            className={
+                                classes.item + ' ' + (value.completed ? classes.completed : classes.notCompleted)
+                            }
+                            id={labelId}
+                            primary={value.title}
+                        />
                         <ListItemSecondaryAction>
                             <Checkbox
                                 edge="end"
