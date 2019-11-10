@@ -6,7 +6,8 @@ import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction'
 import ListItemText from '@material-ui/core/ListItemText'
 import Checkbox from '@material-ui/core/Checkbox'
 import { TodoItem } from 'src/app/todo-store.service'
-import { ListSubheader } from '@material-ui/core'
+import { ListSubheader, Grow } from '@material-ui/core'
+import { TransitionGroup } from 'react-transition-group'
 
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
@@ -45,28 +46,34 @@ export function TodoList(props: TodoListProps) {
             }
             classes={{ root: classes.root }}
         >
-            {props.todoList.map((value, index) => {
-                const labelId = `todo-list-secondary-label-${index}`
-                return (
-                    <ListItem key={index} button onClick={() => props.onToggle(index)}>
-                        <ListItemText
-                            className={
-                                classes.item + ' ' + (value.completed ? classes.completed : classes.notCompleted)
-                            }
-                            id={labelId}
-                            primary={value.title}
-                        />
-                        <ListItemSecondaryAction>
-                            <Checkbox
-                                edge="end"
-                                onChange={() => props.onToggle(index)}
-                                checked={value.completed}
-                                inputProps={{ 'aria-labelledby': labelId }}
-                            />
-                        </ListItemSecondaryAction>
-                    </ListItem>
-                )
-            })}
+            <TransitionGroup>
+                {props.todoList.map((value, index) => {
+                    const labelId = `todo-list-secondary-label-${index}`
+                    return (
+                        <Grow key={index}>
+                            <ListItem button onClick={() => props.onToggle(index)}>
+                                <ListItemText
+                                    className={
+                                        classes.item +
+                                        ' ' +
+                                        (value.completed ? classes.completed : classes.notCompleted)
+                                    }
+                                    id={labelId}
+                                    primary={value.title}
+                                />
+                                <ListItemSecondaryAction>
+                                    <Checkbox
+                                        edge="end"
+                                        onChange={() => props.onToggle(index)}
+                                        checked={value.completed}
+                                        inputProps={{ 'aria-labelledby': labelId }}
+                                    />
+                                </ListItemSecondaryAction>
+                            </ListItem>
+                        </Grow>
+                    )
+                })}
+            </TransitionGroup>
         </List>
     )
 }
