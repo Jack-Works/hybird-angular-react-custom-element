@@ -12,11 +12,13 @@ import { TransitionGroup } from 'react-transition-group'
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
         width: '100%',
-        backgroundColor: theme.palette.background.paper,
-        display: 'flex',
-        flexDirection: 'column-reverse'
+        backgroundColor: theme.palette.background.paper
     } as const,
     subheader: (props: { count: number }) => ({ order: props.count + 1, userSelect: 'none' } as const),
+    itemList: {
+        display: 'flex',
+        flexDirection: 'column-reverse'
+    },
     item: {
         textDecorationLine: 'line-through',
         transition: '0.4s'
@@ -46,7 +48,7 @@ export function TodoList(props: TodoListProps) {
             }
             classes={{ root: classes.root }}
         >
-            <TransitionGroup>
+            <TransitionGroup className={classes.itemList}>
                 {props.todoList.map((value, index) => {
                     const labelId = `todo-list-secondary-label-${index}`
                     return (

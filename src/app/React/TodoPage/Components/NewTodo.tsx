@@ -27,7 +27,7 @@ export interface NewTodoProps {
     onNewItem(title: string): void
 }
 export function NewTodo(props: NewTodoProps) {
-    const classes = useStyles()
+    const classes = useStyles({})
     const [input, setInput] = React.useState('')
 
     return (
