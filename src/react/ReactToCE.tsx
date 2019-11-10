@@ -107,10 +107,44 @@ export function useReact<T>(
     ReactComponent: ReactComponent<T>,
     ngClass: { new (...args: any[]): ReactComponentProps<typeof ReactComponent> }
 ) {
-    if (!customElements.get(ReactComponent.displayName)) ReactToCustomElement(ReactComponent)
+    if (!customElements.get(ReactComponent.displayName || 'empty-name')) ReactToCustomElement(ReactComponent)
     return GenerateAngularTemplate(ReactComponent, ngClass)
 }
 
-function render(component: React.ComponentType<any>, props: any, host: Element) {
-    ReactDOM.render(React.createElement(component, props), host)
+let RootComponent: React.ComponentType = x => <>{x.children}</>
+export function setRootComponent(comp: React.ComponentType) {
+    RootComponent = comp
+}
+
+class ErrorBoundary extends React.Component {
+    state: { error: Error | undefined } = { error: undefined }
+    componentDidCatch(error: unknown) {
+        if (error instanceof Error) this.setState({ error })
+        else {
+            console.error(error)
+            this.setState({ error: new Error('Unknown error') })
+        }
+    }
+    render() {
+        if (this.state.error)
+            return (
+                <>
+                    <pre>{this.state.error.name}:</pre>
+                    <pre>Message: {this.state.error.message}</pre>
+                    <pre>Stack:{'\n' + this.state.error.stack}</pre>
+                </>
+            )
+        return this.props.children
+    }
+}
+
+function render(Component: React.ComponentType<any>, props: any, host: Element) {
+    ReactDOM.render(
+        <ErrorBoundary>
+            <RootComponent>
+                <Component {...props}></Component>
+            </RootComponent>
+        </ErrorBoundary>,
+        host
+    )
 }
