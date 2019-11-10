@@ -68,6 +68,7 @@ export function ReactToCustomElement<T>(ReactComponent: React.ComponentType<T> &
                         }
                     })
                 )
+                requestAnimationFrame(() => render(ReactComponent, this[props], this[host]))
             }
         }
     }

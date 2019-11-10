@@ -16,35 +16,24 @@ const useStyles = makeStyles((theme: Theme) =>
         }
     })
 )
-
-export function TodoList(props: { items: TodoItem[] }) {
+export interface TodoListProps {
+    todoList: readonly TodoItem[]
+    onToggle(index: number): void
+}
+export function TodoList(props: TodoListProps) {
     const classes = useStyles({})
-    const [checked, setChecked] = React.useState([1])
-
-    const handleToggle = (value: number) => () => {
-        const currentIndex = checked.indexOf(value)
-        const newChecked = [...checked]
-
-        if (currentIndex === -1) {
-            newChecked.push(value)
-        } else {
-            newChecked.splice(currentIndex, 1)
-        }
-
-        setChecked(newChecked)
-    }
 
     return (
         <List subheader={<ListSubheader>Todo List</ListSubheader>} className={classes.root}>
-            {props.items.map((value, index) => {
+            {props.todoList.map((value, index) => {
                 const labelId = `todo-list-secondary-label-${value}`
                 return (
-                    <ListItem key={index} button>
+                    <ListItem key={index} button onClick={() => props.onToggle(index)}>
                         <ListItemText id={labelId} primary={value.title} />
                         <ListItemSecondaryAction>
                             <Checkbox
                                 edge="end"
-                                onChange={handleToggle(index)}
+                                onChange={() => props.onToggle(index)}
                                 checked={value.completed}
                                 inputProps={{ 'aria-labelledby': labelId }}
                             />

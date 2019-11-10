@@ -9,5 +9,9 @@ export interface TodoItem {
     providedIn: 'root'
 })
 export class TodoStoreService {
-    public todoItems: TodoItem[] = [{ completed: false, title: 'Hello' }]
+    public todoItems: readonly TodoItem[] = [{ completed: false, title: 'Hello' }]
+    toggleTodoItem(index: number) {
+        const x = this.todoItems[index]
+        if (x) x.completed = !x.completed
+    }
 }

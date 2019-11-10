@@ -7,11 +7,12 @@ import { TodoPage, TodoPageProps } from '../React/TodoPage'
     selector: 'app-todo',
     template: useReact(TodoPage, TodoPageComponent)
 })
-export class TodoPageComponent implements OnInit, TodoPageProps {
-    constructor(public todoStore: TodoStoreService) {}
+export class TodoPageComponent implements TodoPageProps {
+    constructor(public todoService: TodoStoreService) {}
     get todoList() {
-        return this.todoStore.todoItems
+        return this.todoService.todoItems
     }
-
-    ngOnInit() {}
+    onToggle(index: number) {
+        this.todoService.toggleTodoItem(index)
+    }
 }
