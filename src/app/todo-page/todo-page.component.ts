@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core'
+import { Component } from '@angular/core'
 import { TodoStoreService } from '../todo-store.service'
 import { useReact } from 'src/react/ReactToCE'
 import { TodoPage, TodoPageProps } from '../React/TodoPage'
@@ -13,6 +13,9 @@ export class TodoPageComponent implements TodoPageProps {
         return this.todoService.todoItems
     }
     onToggle(index: number) {
-        this.todoService.toggleTodoItem(index)
+        this.todoService.switchTodo(index)
+    }
+    onNewItem(item: string) {
+        this.todoService.addNewTodo({ completed: false, title: item })
     }
 }

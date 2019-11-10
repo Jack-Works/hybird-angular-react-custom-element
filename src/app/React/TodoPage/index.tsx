@@ -1,13 +1,12 @@
 import * as React from 'react'
 import { Container, Typography, AppBar, Toolbar, Paper, makeStyles, Theme } from '@material-ui/core'
 import { TodoList, TodoListProps } from './Components/TodoList'
-import { TodoItem } from 'src/app/todo-store.service'
+import { NewTodo, NewTodoProps } from './Components/NewTodo'
 
-export interface TodoPageProps extends TodoListProps {}
+export interface TodoPageProps extends TodoListProps, NewTodoProps {}
 const useStyle = makeStyles((theme: Theme) => ({
     root: {
-        minHeight: `calc(100vh - ${64}px)`,
-        paddingTop: theme.spacing(1)
+        minHeight: `calc(100vh - ${64}px)`
     }
 }))
 export function TodoPage(props: Partial<TodoPageProps>) {
@@ -19,7 +18,8 @@ export function TodoPage(props: Partial<TodoPageProps>) {
                     <Typography variant="h6">Todo, with Angular + React</Typography>
                 </Toolbar>
             </AppBar>
-            <Paper classes={{ root: classes.root }}>
+            <Paper square classes={{ root: classes.root }}>
+                <NewTodo onNewItem={props.onNewItem || (() => {})}></NewTodo>
                 <TodoList todoList={props.todoList || []} onToggle={props.onToggle || (() => {})} />
             </Paper>
         </Container>

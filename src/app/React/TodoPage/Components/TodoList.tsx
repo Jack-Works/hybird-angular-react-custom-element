@@ -8,23 +8,27 @@ import Checkbox from '@material-ui/core/Checkbox'
 import { TodoItem } from 'src/app/todo-store.service'
 import { ListSubheader } from '@material-ui/core'
 
-const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        root: {
-            width: '100%',
-            backgroundColor: theme.palette.background.paper
-        }
-    })
-)
+const useStyles = makeStyles((theme: Theme) => ({
+    root: {
+        width: '100%',
+        backgroundColor: theme.palette.background.paper,
+        display: 'flex',
+        flexDirection: 'column-reverse'
+    } as const,
+    subheader: (props: { count: number }) => ({ order: props.count + 1 } as const)
+}))
 export interface TodoListProps {
     todoList: readonly TodoItem[]
     onToggle(index: number): void
 }
 export function TodoList(props: TodoListProps) {
-    const classes = useStyles({})
+    const classes = useStyles({ count: props.todoList.length })
 
     return (
-        <List subheader={<ListSubheader>Todo List</ListSubheader>} className={classes.root}>
+        <List
+            subheader={<ListSubheader className={classes.subheader}>Todo List</ListSubheader>}
+            classes={{ root: classes.root }}
+        >
             {props.todoList.map((value, index) => {
                 const labelId = `todo-list-secondary-label-${value}`
                 return (
