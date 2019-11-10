@@ -18,4 +18,7 @@ export class TodoPageComponent implements TodoPageProps {
     onNewItem(item: string) {
         this.todoService.addNewTodo({ completed: false, title: item })
     }
+    onClear() {
+        this.todoService.clearCompletedItem()
+    }
 }

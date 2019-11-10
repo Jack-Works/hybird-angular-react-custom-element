@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         display: 'flex',
         flexDirection: 'column-reverse'
     } as const,
-    subheader: (props: { count: number }) => ({ order: props.count + 1 } as const),
+    subheader: (props: { count: number }) => ({ order: props.count + 1, userSelect: 'none' } as const),
     item: {
         textDecorationLine: 'line-through',
         transition: '0.4s'
@@ -38,7 +38,11 @@ export function TodoList(props: TodoListProps) {
 
     return (
         <List
-            subheader={<ListSubheader className={classes.subheader}>Todo List</ListSubheader>}
+            subheader={
+                <ListSubheader className={classes.subheader}>
+                    {props.todoList.length ? 'Todo List' : 'There is no item in the todo list'}
+                </ListSubheader>
+            }
             classes={{ root: classes.root }}
         >
             {props.todoList.map((value, index) => {

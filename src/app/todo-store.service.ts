@@ -9,7 +9,10 @@ export interface TodoItem {
     providedIn: 'root'
 })
 export class TodoStoreService {
-    private _todoItems: TodoItem[] = [{ completed: false, title: 'Hello' }]
+    private _todoItems: TodoItem[] = [
+        { completed: false, title: 'ハウトゥー世界征服' },
+        { completed: true, title: 'start scp-2000 ' }
+    ]
     public get todoItems(): readonly Readonly<TodoItem>[] {
         return this._todoItems
     }
@@ -19,5 +22,8 @@ export class TodoStoreService {
     }
     addNewTodo(item: TodoItem) {
         this._todoItems.push(item)
+    }
+    clearCompletedItem() {
+        this._todoItems = this._todoItems.filter(x => x.completed === false)
     }
 }
