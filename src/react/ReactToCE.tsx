@@ -4,7 +4,6 @@ import * as ReactDOM from 'react-dom'
 import * as React from 'react'
 
 interface CustomElementOptions {
-    displayName?: string
     customElementOptions?: ElementDefinitionOptions
 }
 export type ReactComponent<T> = React.ComponentType<T> & CustomElementOptions
@@ -35,9 +34,10 @@ const onAngularZoneCallbackMap = new Set<(...args: any[]) => void>()
 // TODO: use private fields.
 const props = Symbol('Props')
 const host = Symbol('Host')
-export function ReactToCustomElement<T>(ReactComponent: React.ComponentType<T> & CustomElementOptions) {
-    if (ReactComponent.displayName === undefined || ReactComponent.displayName.indexOf('-') === -1)
-        throw new TypeError('The "displayName" property must have a "-" in the middle.')
+export function ReactToCustomElement<T>(
+    elementName: string,
+    ReactComponent: React.ComponentType<T> & CustomElementOptions
+) {
     class CustomElement extends HTMLElement {
         private [props]: any = new Proxy(
             {},
@@ -105,15 +105,16 @@ export function ReactToCustomElement<T>(ReactComponent: React.ComponentType<T> &
             }
         }
     }
-    customElements.define(ReactComponent.displayName, CustomElement, ReactComponent.customElementOptions)
+    customElements.define(elementName, CustomElement, ReactComponent.customElementOptions)
     return CustomElement
 }
 
 export function GenerateAngularTemplate<T>(
+    elementName: string,
     ReactComponent: ReactComponent<T>,
     ngClass: { new (...args: any[]): ReactComponentProps<typeof ReactComponent> }
 ) {
-    let template = `<` + ReactComponent.displayName
+    let template = `<` + elementName
     const desc = Object.getOwnPropertyDescriptors(ngClass.prototype)
     for (const i in desc) {
         if (i === 'constructor') continue
@@ -133,7 +134,7 @@ export function GenerateAngularTemplate<T>(
         template += ` [${property}]="${property}" `
     }
 
-    template += '></' + ReactComponent.displayName + '>'
+    template += '></' + elementName + '>'
     return template
 }
 
@@ -141,8 +142,16 @@ export function useReact<T>(
     ReactComponent: ReactComponent<T>,
     ngClass: { new (...args: any[]): ReactComponentProps<typeof ReactComponent> }
 ) {
-    if (!customElements.get(ReactComponent.displayName || 'empty-name')) ReactToCustomElement(ReactComponent)
-    return GenerateAngularTemplate(ReactComponent, ngClass)
+    const elementName =
+        ReactComponent.displayName ||
+        'react-' +
+            ReactComponent.name.toLowerCase() +
+            '-' +
+            Math.random()
+                .toString(26)
+                .slice(2)
+    ReactToCustomElement(elementName, ReactComponent)
+    return GenerateAngularTemplate(elementName, ReactComponent, ngClass)
 }
 
 let RootComponent: React.ComponentType = x => <>{x.children}</>
