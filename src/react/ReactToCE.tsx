@@ -1,3 +1,4 @@
+/// <reference path="../../node_modules/zone.js/lib/zone.d.ts" />
 /// <reference path="./ReactHelper.d.ts" />
 import * as ReactDOM from 'react-dom'
 import * as React from 'react'
@@ -7,6 +8,29 @@ interface CustomElementOptions {
     customElementOptions?: ElementDefinitionOptions
 }
 export type ReactComponent<T> = React.ComponentType<T> & CustomElementOptions
+
+const onAngularZoneCallbackMap = new Set<(...args: any[]) => void>()
+{
+    let angularZone: Zone = undefined!
+    // @ts-ignore
+    Zone.current._zoneDelegate.__proto__.invokeTask = new Proxy(Zone.current._zoneDelegate.__proto__.invokeTask, {
+        apply(target, thisArg, args) {
+            if (args[0].name === 'angular') {
+                angularZone = args[0]
+                // @ts-ignore
+                const original = angularZone._zoneDelegate._hasTaskZS.onHasTask
+                // @ts-ignore Patch Angular Zone here.
+                angularZone._zoneDelegate._hasTaskZS.onHasTask = function(...args) {
+                    onAngularZoneCallbackMap.forEach(x => x())
+                    return Reflect.apply(original, this, args)
+                } as ZoneSpec['onHasTask']
+                // @ts-ignore restore the object
+                Zone.current._zoneDelegate.__proto__.invokeTask = target
+            }
+            return Reflect.apply(target, thisArg, args)
+        }
+    })
+}
 
 // TODO: use private fields.
 const props = Symbol('Props')
@@ -29,6 +53,12 @@ export function ReactToCustomElement<T>(ReactComponent: React.ComponentType<T> &
         private [host] = document.createElement('host')
         constructor() {
             super()
+            onAngularZoneCallbackMap.add(() => {
+                // @ts-ignore Don't use requestAnimationFrame, it's patched by Zone.
+                globalThis[Zone.__symbol__('requestAnimationFrame')](() =>
+                    render(ReactComponent, this[props], this[host])
+                )
+            })
             Object.setPrototypeOf(
                 this,
                 new Proxy(HTMLElement.prototype, {
@@ -68,7 +98,10 @@ export function ReactToCustomElement<T>(ReactComponent: React.ComponentType<T> &
                         }
                     })
                 )
-                requestAnimationFrame(() => render(ReactComponent, this[props], this[host]))
+                // @ts-ignore
+                globalThis[Zone.__symbol__('requestAnimationFrame')](() =>
+                    render(ReactComponent, this[props], this[host])
+                )
             }
         }
     }
